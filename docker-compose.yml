@@ -1,0 +1,9 @@
+version: '3'
+services:
+  front:
+    build: ./front/
+    volumes:
+      - ./front:/usr/src/app
+    command: "yarn dev"
+    ports:
+      - "3000:3000"
