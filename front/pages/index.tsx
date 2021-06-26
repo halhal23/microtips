@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import Image from 'next/image'
+import Link from 'next/link'
 
 export const Home = (): JSX.Element => (
   <div className="container">
@@ -12,6 +13,7 @@ export const Home = (): JSX.Element => (
       <h1 className="title">
         Welcome to <a href="https://nextjs.org">Microtips!</a>
       </h1>
+      <Link href="/test">to test page</Link>
 
       <p className="description">
         Get started by editing <code>pages/index.tsx</code>
