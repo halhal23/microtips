@@ -16,7 +16,9 @@ const ArticlesList: NextPage<ArticlesListProps> = () => {
   console.log(articles);
   return (
     <ul>
-      <li>list</li>
+      {
+        articles.map(article => <li key={article.id}>{ article.title }</li>)
+      }
     </ul>
   )
 }
