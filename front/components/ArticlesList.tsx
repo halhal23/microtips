@@ -2,6 +2,7 @@
 import {useQuery} from '@apollo/client'
 import { ARTICLES_QUERY, ArticlesData} from '../graphql/queries/articles.query'
 import { NextPage } from 'next'
+import ArticleNew from './ArticleNew';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface ArticlesListProps {}
@@ -15,11 +16,14 @@ const ArticlesList: NextPage<ArticlesListProps> = () => {
   // eslint-disable-next-line no-console
   console.log(articles);
   return (
-    <ul>
-      {
-        articles.map(article => <li key={article.id}>{ article.title }</li>)
-      }
-    </ul>
+    <>
+      <ul>
+        {
+          articles.map(article => <li key={article.id}>{ article.title }</li>)
+        }
+      </ul>
+      <ArticleNew />
+    </>
   )
 }
 

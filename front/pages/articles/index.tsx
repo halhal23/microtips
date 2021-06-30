@@ -12,9 +12,6 @@ const Index: NextPage<IndexProps> = () => {
   return (
     <>
       <h2>hello world list</h2>
-      {
-        // articles.map(article => <p key={article.id}>{article.title}</p>)
-      }
     </>
   )
 }
