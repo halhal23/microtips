@@ -13,8 +13,8 @@ export const ARTICLES_QUERY = gql`
 `;
 
 export const CREATE_ARTICLE_MUTATION = gql`
-  mutation createArticle {
-    createArticle(input: {author: "next front", title: "from next front desu", content: "hello world from next front"}) {
+  mutation createArticle($author: String!, $title: String!, $content: String!) {
+    createArticle(input: {author: $author, title: $title, content: $content}) {
       id
       author
       title
