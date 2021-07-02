@@ -4,6 +4,8 @@ import (
 	"context"
 	"microtips/user/pb"
 	"microtips/user/repository"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Service interface {
@@ -24,15 +26,25 @@ func NewService(r repository.Repository) Service {
 
 func (s *service) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 	input := req.GetUserInput()
-	id, err := s.repository.InsertUser(ctx, input)
+
+	hassedPassword, err := HashPassword(input.Password)
 	if err != nil {
 		return nil, err
 	}
+
+	id, err := s.repository.InsertUser(ctx, &pb.UserInput{
+		Name:     input.Name,
+		Password: hassedPassword,
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	return &pb.CreateUserResponse{
 		User: &pb.User{
 			Id:       id,
 			Name:     input.Name,
-			Password: input.Password,
+			Password: hassedPassword,
 		},
 	}, nil
 }
@@ -93,4 +105,16 @@ func (s *service) ListUser(req *pb.ListUserRequest, stream pb.UserService_ListUs
 		stream.Send(&pb.ListUserResponse{User: &user})
 	}
 	return nil
+}
+
+//HashPassword hashes given password
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
+}
+
+//CheckPassword hash compares raw password with it's hashed values
+func CheckPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }
