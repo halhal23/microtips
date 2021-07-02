@@ -55,7 +55,7 @@ func (r *sqliteRepo) SelectUserById(ctx context.Context, id int64) (*pb.User, er
 	cmd := "SELECT * FROM users WHERE id = ?"
 	row := r.db.QueryRow(cmd, id)
 	var user pb.User
-	err := row.Scan(&user.Name, &user.Password)
+	err := row.Scan(&user.Id, &user.Name, &user.Password)
 	if err != nil {
 		return nil, err
 	}

@@ -5,7 +5,7 @@ package graph
 
 import (
 	"context"
-	"fmt"
+	"io"
 	"microtips/graph/model"
 	"microtips/user/pb"
 )
@@ -43,35 +43,44 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, input model.UpdateUse
 }
 
 func (r *mutationResolver) DeleteUser(ctx context.Context, input int) (int, error) {
-	panic(fmt.Errorf("not implemented"))
+	res, err := r.UserClient.Service.DeleteUser(ctx, &pb.DeleteUserRequest{Id: int64(input)})
+	if err != nil {
+		return 0, err
+	}
+	return int(res.Id), nil
 }
 
 func (r *queryResolver) User(ctx context.Context, input int) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
+	res, err := r.UserClient.Service.ReadUser(ctx, &pb.ReadUserRequest{Id: int64(input)})
+	if err != nil {
+		return nil, err
+	}
+	return &model.User{
+		ID:       int(res.User.Id),
+		Name:     res.User.Name,
+		Password: res.User.Password,
+	}, nil
 }
 
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *mutationResolver) User(ctx context.Context, input int) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-func (r *mutationResolver) Users(ctx context.Context) ([]*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-func (r *queryResolver) CreateUser(ctx context.Context, input model.CreateUserInput) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-func (r *queryResolver) UpdateUser(ctx context.Context, input model.UpdateUserInput) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-func (r *queryResolver) DeleteUser(ctx context.Context, input int) (int, error) {
-	panic(fmt.Errorf("not implemented"))
+	res, err := r.UserClient.Service.ListUser(ctx, &pb.ListUserRequest{})
+	if err != nil {
+		return nil, err
+	}
+	var users []*model.User
+	for {
+		r, err := res.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, &model.User{
+			ID:       int(r.User.Id),
+			Name:     r.User.Name,
+			Password: r.User.Password,
+		})
+	}
+	return users, nil
 }
