@@ -20,3 +20,7 @@ func NewClient(url string) (*Client, error) {
 	client := pb.NewUserServiceClient(conn)
 	return &Client{conn, client}, nil
 }
+
+func (c *Client) Close() {
+	c.conn.Close()
+}

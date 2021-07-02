@@ -12,7 +12,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to create client: %v\n", err)
 	}
-	create(c)
+	// create(c)
+	update(c)
 }
 
 func create(c *client.Client) {
@@ -28,4 +29,20 @@ func create(c *client.Client) {
 		log.Fatalf("Failed to create user: %v\n", err)
 	}
 	log.Printf("user created successfully. id: %d, name: %s, password: %s\n", res.User.Id, res.User.Name, res.User.Password)
+}
+
+func update(c *client.Client) {
+	input := &pb.UserInput{
+		Name:     "hahahaha",
+		Password: "hahahaha",
+	}
+	req := &pb.UpdateUserRequest{
+		Id:        4,
+		UserInput: input,
+	}
+	res, err := c.Service.UpdateUser(context.Background(), req)
+	if err != nil {
+		log.Fatalf("Failed to update user: %v\n", err)
+	}
+	log.Printf("user updated successfully. id: %d, name: %s, password: %s\n", res.User.Id, res.User.Name, res.User.Password)
 }

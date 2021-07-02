@@ -2,9 +2,10 @@ package main
 
 import (
 	"log"
-	"microtips/article/client"
+	articleClientPkg "microtips/article/client"
 	"microtips/graph"
 	"microtips/graph/generated"
+	userClientPkg "microtips/user/client"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -57,13 +58,20 @@ func main() {
 // Defining the Graphql handler
 func graphqlHandler() gin.HandlerFunc {
 	// articleClientを生成
-	articleClient, err := client.NewClient("localhost:50051")
+	articleClient, err := articleClientPkg.NewClient("localhost:50051")
 	if err != nil {
 		articleClient.Close()
 		log.Fatalf("Failed to create article client: %v\n", err)
 	}
+	// userClientを生成
+	userClient, err := userClientPkg.NewClient("localhost:50052")
+	if err != nil {
+		userClient.Close()
+		log.Fatalf("Failed to create article client: %v\n", err)
+	}
+
 	// h := handler.GraphQL(NewExecutableSchema(Config{Resolvers: &Resolver{}}))
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{ArticleClient: articleClient}}))
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{ArticleClient: articleClient, UserClient: userClient}}))
 
 	return func(c *gin.Context) {
 		srv.ServeHTTP(c.Writer, c.Request)

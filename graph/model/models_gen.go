@@ -15,9 +15,26 @@ type CreateInput struct {
 	Content string `json:"content"`
 }
 
+type CreateUserInput struct {
+	Name     string `json:"name"`
+	Password string `json:"password"`
+}
+
 type UpdateInput struct {
 	ID      int    `json:"id"`
 	Author  string `json:"author"`
 	Title   string `json:"title"`
 	Content string `json:"content"`
+}
+
+type UpdateUserInput struct {
+	ID       int    `json:"id"`
+	Name     string `json:"name"`
+	Password string `json:"password"`
+}
+
+type User struct {
+	ID       int    `json:"id"`
+	Name     string `json:"name"`
+	Password string `json:"password"`
 }
