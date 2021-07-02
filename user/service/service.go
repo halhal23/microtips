@@ -10,10 +10,13 @@ import (
 
 type Service interface {
 	CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error)
-	ReadUser(ctx context.Context, req *pb.ReadUserRequest) (*pb.ReadUserResponse, error)
+	ReadUserById(ctx context.Context, req *pb.ReadUserByIdRequest) (*pb.ReadUserByIdResponse, error)
+	ReadUserByName(ctx context.Context, req *pb.ReadUserByNameRequest) (*pb.ReadUserByNameResponse, error)
 	UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.UpdateUserResponse, error)
 	DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error)
 	ListUser(req *pb.ListUserRequest, stream pb.UserService_ListUserServer) error
+	SignUp(ctx context.Context, input *pb.SignUpRequest) (*pb.SignUpResponse, error)
+	SignIn(ctx context.Context, input *pb.SignInRequest) (*pb.SignInResponse, error)
 }
 
 type service struct {
@@ -49,15 +52,30 @@ func (s *service) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*p
 	}, nil
 }
 
-func (s *service) ReadUser(ctx context.Context, req *pb.ReadUserRequest) (*pb.ReadUserResponse, error) {
+func (s *service) ReadUserById(ctx context.Context, req *pb.ReadUserByIdRequest) (*pb.ReadUserByIdResponse, error) {
 	id := req.GetId()
 	user, err := s.repository.SelectUserById(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	return &pb.ReadUserResponse{
+	return &pb.ReadUserByIdResponse{
 		User: &pb.User{
 			Id:       id,
+			Name:     user.Name,
+			Password: user.Password,
+		},
+	}, nil
+}
+
+func (s *service) ReadUserByName(ctx context.Context, req *pb.ReadUserByNameRequest) (*pb.ReadUserByNameResponse, error) {
+	name := req.GetName()
+	user, err := s.repository.SelectUserByName(ctx, name)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.ReadUserByNameResponse{
+		User: &pb.User{
+			Id:       user.Id,
 			Name:     user.Name,
 			Password: user.Password,
 		},
@@ -105,6 +123,14 @@ func (s *service) ListUser(req *pb.ListUserRequest, stream pb.UserService_ListUs
 		stream.Send(&pb.ListUserResponse{User: &user})
 	}
 	return nil
+}
+
+func (s *service) SignUp(ctx context.Context, input *pb.SignUpRequest) (*pb.SignUpResponse, error) {
+	return nil, nil
+}
+
+func (s *service) SignIn(ctx context.Context, input *pb.SignInRequest) (*pb.SignInResponse, error) {
+	return nil, nil
 }
 
 //HashPassword hashes given password

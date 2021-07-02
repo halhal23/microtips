@@ -11,6 +11,7 @@ import (
 type Repository interface {
 	InsertUser(ctx context.Context, input *pb.UserInput) (int64, error)
 	SelectUserById(ctx context.Context, id int64) (*pb.User, error)
+	SelectUserByName(ctx context.Context, name string) (*pb.User, error)
 	UpdateUser(ctx context.Context, id int64, input *pb.UserInput) error
 	DeleteUser(ctx context.Context, id int64) error
 	SelectAllUsers() (*sql.Rows, error)
@@ -54,6 +55,21 @@ func (r *sqliteRepo) InsertUser(ctx context.Context, input *pb.UserInput) (int64
 func (r *sqliteRepo) SelectUserById(ctx context.Context, id int64) (*pb.User, error) {
 	cmd := "SELECT * FROM users WHERE id = ?"
 	row := r.db.QueryRow(cmd, id)
+	var user pb.User
+	err := row.Scan(&user.Id, &user.Name, &user.Password)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.User{
+		Id:       int64(user.Id),
+		Name:     user.Name,
+		Password: user.Password,
+	}, nil
+}
+
+func (r *sqliteRepo) SelectUserByName(ctx context.Context, name string) (*pb.User, error) {
+	cmd := "SELECT * FROM users WHERE name = ?"
+	row := r.db.QueryRow(cmd, name)
 	var user pb.User
 	err := row.Scan(&user.Id, &user.Name, &user.Password)
 	if err != nil {

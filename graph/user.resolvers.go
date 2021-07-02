@@ -51,7 +51,7 @@ func (r *mutationResolver) DeleteUser(ctx context.Context, input int) (int, erro
 }
 
 func (r *queryResolver) User(ctx context.Context, input int) (*model.User, error) {
-	res, err := r.UserClient.Service.ReadUser(ctx, &pb.ReadUserRequest{Id: int64(input)})
+	res, err := r.UserClient.Service.ReadUserById(ctx, &pb.ReadUserByIdRequest{Id: int64(input)})
 	if err != nil {
 		return nil, err
 	}
