@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package user;
+option go_package = "user/pb";
+
+// やり取りする記事の型定義
+message User {
+  int64 id = 1;
+  string name = 2;
+  string password = 3;
+}
+
+// CREATEとUPDATEにおける入力のための型
+message UserInput {
+  string name = 1;
+  string password = 2;
+}
+
+// CREATEする記事の内容(author, title, content)を受け取る
+message CreateUserRequest {
+  UserInput userInput = 1;
+}
+
+// CREATEした記事を返す
+message CreateUserResponse {
+  User user = 1;
+}
+
+// READする記事のIDを受け取る
+message ReadUserRequest {
+  int64 id = 1;
+}
+
+// 該当するIDの記事を返す
+message ReadUserResponse {
+  User user = 1;
+}
+
+// UPDATEする記事のIDと変更内容を受け取る
+message UpdateUserRequest {
+  int64 id = 1;
+  UserInput userInput = 2;
+}
+
+// UPDATEした記事を返す 
+message UpdateUserResponse {
+  User user = 1;
+}
+
+// DELETEする記事のIDを受け取る
+message DeleteUserResponse {
+  int64 id = 1;
+}
+
+// DELETEした記事のIDを返す
+message DeleteUserRequest {
+  int64 id = 1;
+}
+
+// 全取得の際、入力は無し
+message ListUserRequest {
+
+}
+
+// 全取得した記事を１つずつ返すので、配列(repeated)の形ではなくUser1つを返す形
+message ListUserResponse {
+  User user = 1;
+}
+
+// userサービスを定義
+service UserService {
+  rpc CreateUser(CreateUserRequest) returns(CreateUserResponse);
+  rpc ReadUser(ReadUserRequest) returns(ReadUserResponse);
+  rpc UpdateUser(UpdateUserRequest) returns(UpdateUserResponse);
+  rpc DeleteUser(DeleteUserRequest) returns(DeleteUserResponse);
+  rpc ListUser(ListUserRequest) returns(stream ListUserResponse);
+}
