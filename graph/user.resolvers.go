@@ -7,9 +7,7 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log"
 	"microtips/graph/model"
-	"microtips/user/middleware/auth"
 	"microtips/user/pb"
 )
 
@@ -80,8 +78,6 @@ func (r *queryResolver) User(ctx context.Context, input int) (*model.User, error
 }
 
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
-	user := auth.ForContext(ctx)
-	log.Printf("コンテキストから見つけたuser in graphql: %v\n", user)
 	res, err := r.UserClient.Service.ListUser(ctx, &pb.ListUserRequest{})
 	if err != nil {
 		return nil, err

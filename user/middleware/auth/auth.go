@@ -46,7 +46,6 @@ func LoginMiddleware() func(http.Handler) http.Handler {
 func Middleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		header := c.GetHeader("Authorization")
-		log.Println("Authorization Header:", header)
 
 		// Allow unauthenticated users in
 		if header == "" {
@@ -57,7 +56,6 @@ func Middleware() gin.HandlerFunc {
 		//validate jwt token
 		tokenStr := header
 		username, err := jwt.ParseToken(tokenStr)
-		log.Println("Parsed token and get username:", username)
 		if err != nil {
 			return
 		}
@@ -73,7 +71,7 @@ func Middleware() gin.HandlerFunc {
 			log.Printf("Cannot find user by name: %v\n", err)
 			return
 		}
-		log.Printf("finded user: %v\n", res.User)
+		log.Printf("finded user in auth middleware: %v\n", res.User)
 
 		// and call the next with our new context
 		ctx := context.WithValue(c.Request.Context(), userCtxKey, &pb.User{Id: res.User.Id, Name: res.User.Name, Password: res.User.Password})

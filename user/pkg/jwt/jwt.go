@@ -33,7 +33,6 @@ func ParseToken(tokenStr string) (string, error) {
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 		return SecretKey, nil
 	})
-	log.Printf("token: %v, err: %v", token, err)
 	if err != nil {
 		return "", err
 	}
