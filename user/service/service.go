@@ -2,7 +2,9 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"microtips/user/pb"
+	"microtips/user/pkg/jwt"
 	"microtips/user/repository"
 
 	"golang.org/x/crypto/bcrypt"
@@ -130,7 +132,22 @@ func (s *service) SignUp(ctx context.Context, input *pb.SignUpRequest) (*pb.Sign
 }
 
 func (s *service) SignIn(ctx context.Context, input *pb.SignInRequest) (*pb.SignInResponse, error) {
-	return nil, nil
+	user, err := s.repository.SelectUserByName(ctx, input.UserInput.Name)
+	if err != nil {
+		return nil, err
+	}
+	ok := CheckPasswordHash(input.UserInput.Password, user.Password)
+	if !ok {
+		return nil, fmt.Errorf("パスワードが合っていませんでした。")
+	}
+	token, err := jwt.GenerateToken(input.UserInput.Name)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Printf("これが発行されたJWTです: %v\n", token)
+	return &pb.SignInResponse{
+		Token: token,
+	}, nil
 }
 
 //HashPassword hashes given password

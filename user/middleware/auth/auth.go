@@ -5,6 +5,8 @@ import (
 	"log"
 	"microtips/user/pb"
 	"microtips/user/pkg/jwt"
+	"microtips/user/repository"
+	"microtips/user/service"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -59,6 +61,24 @@ func Middleware() gin.HandlerFunc {
 		if err != nil {
 			return
 		}
+
+		repo, err := repository.NewsqliteRepo()
+		if err != nil {
+			log.Printf("Cannot initialize repository: %v\n", err)
+			return
+		}
+		svc := service.NewService(repo)
+		res, err := svc.ReadUserByName(c, &pb.ReadUserByNameRequest{Name: username})
+		if err != nil {
+			log.Printf("Cannot find user by name: %v\n", err)
+			return
+		}
+		log.Printf("finded user: %v\n", res.User)
+
+		// and call the next with our new context
+		ctx := context.WithValue(c.Request.Context(), userCtxKey, &pb.User{Id: res.User.Id, Name: res.User.Name, Password: res.User.Password})
+		c.Request = c.Request.WithContext(ctx)
+		c.Next()
 	}
 }
 
