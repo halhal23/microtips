@@ -27,12 +27,19 @@ message CreateUserResponse {
 }
 
 // READする記事のIDを受け取る
-message ReadUserRequest {
+message ReadUserByIdRequest {
   int64 id = 1;
 }
-
 // 該当するIDの記事を返す
-message ReadUserResponse {
+message ReadUserByIdResponse {
+  User user = 1;
+}
+// READする記事のIDを受け取る
+message ReadUserByNameRequest {
+  string name = 1;
+}
+// 該当するIDの記事を返す
+message ReadUserByNameResponse {
   User user = 1;
 }
 
@@ -67,11 +74,30 @@ message ListUserResponse {
   User user = 1;
 }
 
+message SignUpRequest {
+  UserInput userInput = 1;
+}
+
+message SignUpResponse {
+  string token = 1;
+}
+
+message SignInRequest {
+  UserInput userInput = 1;
+}
+
+message SignInResponse {
+  string token = 1;
+}
+
 // userサービスを定義
 service UserService {
   rpc CreateUser(CreateUserRequest) returns(CreateUserResponse);
-  rpc ReadUser(ReadUserRequest) returns(ReadUserResponse);
+  rpc ReadUserById(ReadUserByIdRequest) returns(ReadUserByIdResponse);
+  rpc ReadUserByName(ReadUserByNameRequest) returns(ReadUserByNameResponse);
   rpc UpdateUser(UpdateUserRequest) returns(UpdateUserResponse);
   rpc DeleteUser(DeleteUserRequest) returns(DeleteUserResponse);
   rpc ListUser(ListUserRequest) returns(stream ListUserResponse);
+  rpc SignUp(SignUpRequest) returns(SignUpResponse); 
+  rpc SignIn(SignInRequest) returns(SignInResponse); 
 }

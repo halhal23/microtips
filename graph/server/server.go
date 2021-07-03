@@ -6,6 +6,7 @@ import (
 	"microtips/graph"
 	"microtips/graph/generated"
 	userClientPkg "microtips/user/client"
+	"microtips/user/middleware/auth"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -17,6 +18,10 @@ import (
 func main() {
 	// Setting up Gin
 	r := gin.Default()
+
+	// Auth Middlleware
+	r.Use(auth.Middleware())
+
 	///////////////////
 	// CORS
 	///////////////////

@@ -5,8 +5,10 @@ package graph
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"microtips/graph/model"
+	"microtips/user/middleware/auth"
 	"microtips/user/pb"
 )
 
@@ -28,6 +30,10 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.CreateUse
 }
 
 func (r *mutationResolver) UpdateUser(ctx context.Context, input model.UpdateUserInput) (*model.User, error) {
+	user := auth.ForContext(ctx)
+	if user == nil {
+		return nil, fmt.Errorf("access denied yeah.")
+	}
 	res, err := r.UserClient.Service.UpdateUser(ctx, &pb.UpdateUserRequest{
 		Id:        int64(input.ID),
 		UserInput: &pb.UserInput{Name: input.Name, Password: input.Password},
@@ -50,8 +56,28 @@ func (r *mutationResolver) DeleteUser(ctx context.Context, input int) (int, erro
 	return int(res.Id), nil
 }
 
+func (r *mutationResolver) SignUp(ctx context.Context, input model.CreateUserInput) (string, error) {
+	res, err := r.UserClient.Service.SignUp(ctx, &pb.SignUpRequest{
+		UserInput: &pb.UserInput{Name: input.Name, Password: input.Password},
+	})
+	if err != nil {
+		return "", err
+	}
+	return res.Token, err
+}
+
+func (r *mutationResolver) SignIn(ctx context.Context, input model.CreateUserInput) (string, error) {
+	res, err := r.UserClient.Service.SignIn(ctx, &pb.SignInRequest{
+		UserInput: &pb.UserInput{Name: input.Name, Password: input.Password},
+	})
+	if err != nil {
+		return "", nil
+	}
+	return res.Token, nil
+}
+
 func (r *queryResolver) User(ctx context.Context, input int) (*model.User, error) {
-	res, err := r.UserClient.Service.ReadUser(ctx, &pb.ReadUserRequest{Id: int64(input)})
+	res, err := r.UserClient.Service.ReadUserById(ctx, &pb.ReadUserByIdRequest{Id: int64(input)})
 	if err != nil {
 		return nil, err
 	}

@@ -19,6 +19,8 @@ extend type Mutation {
   CreateUser(input: CreateUserInput!): User!
   UpdateUser(input: UpdateUserInput!): User!
   DeleteUser(input: Int!): Int!
+  SignUp(input: CreateUserInput!): String!
+  SignIn(input: CreateUserInput!): String!
 }
 
 extend type Query {

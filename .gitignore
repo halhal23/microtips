@@ -1,0 +1,5 @@
+./user/user.sql
+./article/article.sql
+
+user/*.sql
+user/user.sql
