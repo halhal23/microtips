@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"microtips/graph/model"
+	"microtips/user/middleware/auth"
 	"microtips/user/pb"
 )
 
@@ -29,6 +30,10 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.CreateUse
 }
 
 func (r *mutationResolver) UpdateUser(ctx context.Context, input model.UpdateUserInput) (*model.User, error) {
+	user := auth.ForContext(ctx)
+	if user == nil {
+		return nil, fmt.Errorf("access denied yeah.")
+	}
 	res, err := r.UserClient.Service.UpdateUser(ctx, &pb.UpdateUserRequest{
 		Id:        int64(input.ID),
 		UserInput: &pb.UserInput{Name: input.Name, Password: input.Password},
