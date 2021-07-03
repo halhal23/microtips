@@ -57,7 +57,13 @@ func (r *mutationResolver) DeleteUser(ctx context.Context, input int) (int, erro
 }
 
 func (r *mutationResolver) SignUp(ctx context.Context, input model.CreateUserInput) (string, error) {
-	panic(fmt.Errorf("not implemented"))
+	res, err := r.UserClient.Service.SignUp(ctx, &pb.SignUpRequest{
+		UserInput: &pb.UserInput{Name: input.Name, Password: input.Password},
+	})
+	if err != nil {
+		return "", err
+	}
+	return res.Token, err
 }
 
 func (r *mutationResolver) SignIn(ctx context.Context, input model.CreateUserInput) (string, error) {

@@ -1,4 +1,5 @@
 ./user/user.sql
 ./article/article.sql
 
-**/**.sql
+user/*.sql
+user/user.sql

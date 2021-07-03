@@ -128,7 +128,22 @@ func (s *service) ListUser(req *pb.ListUserRequest, stream pb.UserService_ListUs
 }
 
 func (s *service) SignUp(ctx context.Context, input *pb.SignUpRequest) (*pb.SignUpResponse, error) {
-	return nil, nil
+	hashedPassword, err := HashPassword(input.UserInput.Password)
+	if err != nil {
+		return nil, err
+	}
+	_, err = s.repository.InsertUser(ctx, &pb.UserInput{Name: input.UserInput.Name, Password: hashedPassword})
+	if err != nil {
+		return nil, err
+	}
+	token, err := jwt.GenerateToken(input.UserInput.Name)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Printf("これが発行されたJWTです: %v\n", token)
+	return &pb.SignUpResponse{
+		Token: token,
+	}, nil
 }
 
 func (s *service) SignIn(ctx context.Context, input *pb.SignInRequest) (*pb.SignInResponse, error) {
