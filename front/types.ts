@@ -4,3 +4,9 @@ export interface Article {
   title: string,
   content: string
 }
+
+export interface User {
+  id: number,
+  name: string,
+  password: string
+}

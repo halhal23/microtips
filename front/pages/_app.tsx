@@ -1,9 +1,13 @@
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import { ApolloClient, InMemoryCache, ApolloProvider, HttpLink } from '@apollo/client';
 import { AppProps } from 'next/dist/next-server/lib/router/router';
+
+const link = new HttpLink({
+  uri: 'http://localhost:8080/query',
+})
 
 const cache = new InMemoryCache();
 const client = new ApolloClient({
-  uri: 'http://localhost:8080/query',
+  link,
   cache
 })
 
